@@ -1,19 +1,19 @@
-const { awscdk } = require('projen');
-const { NpmAccess, UpgradeDependenciesSchedule } = require('projen/lib/javascript');
-const project = new awscdk.AwsCdkConstructLibrary({
+const pj = require('projen');
+const project = new pj.awscdk.AwsCdkConstructLibrary({
   author: 'Josh Kellendonk',
   authorAddress: 'joshkellendonk@gmail.com',
   cdkVersion: '2.1.0',
   defaultReleaseBranch: 'main',
   name: '@wheatstalk/cdk-lambda-blowtorch',
   repositoryUrl: 'https://github.com/wheatstalk/cdk-lambda-blowtorch.git',
+  description: 'Warm your slow-starting AWS Lambdas with a blowtorch!',
 
-  npmAccess: NpmAccess.PUBLIC,
+  npmAccess: pj.javascript.NpmAccess.PUBLIC,
   releaseToNpm: true,
 
   depsUpgradeOptions: {
     workflowOptions: {
-      schedule: UpgradeDependenciesSchedule.MONTHLY,
+      schedule: pj.javascript.UpgradeDependenciesSchedule.MONTHLY,
     },
   },
 
@@ -27,7 +27,7 @@ const project = new awscdk.AwsCdkConstructLibrary({
   // packageName: undefined,  /* The "name" in package.json. */
 });
 
-const cdkConfig = new awscdk.CdkConfig(project, {
+const cdkConfig = new pj.awscdk.CdkConfig(project, {
   app: '', // Required for types.
   watchIncludes: [
     `${project.srcdir}/**/*.ts`,

@@ -15,6 +15,13 @@ export interface LambdaBlowtorchProps {
   readonly desiredConcurrency: number;
 
   /**
+   * The interval between warming events at the desired level of concurrency.
+   *
+   * @default Duration.minutes(1)
+   */
+  readonly warmingInterval?: Duration;
+
+  /**
    * Payload to send to the function when warming.
    *
    * @default "{}"
@@ -48,7 +55,7 @@ export class LambdaBlowtorch extends Construct {
       environment: {
         CONFIG: JSON.stringify(config),
       },
-      timeout: Duration.minutes(1),
+      timeout: props.warmingInterval ?? Duration.minutes(1),
     });
 
     props.target.grantInvoke(handler);

@@ -122,6 +122,7 @@ const lambdaBlowtorchProps: LambdaBlowtorchProps = { ... }
 | <code><a href="#@wheatstalk/cdk-lambda-blowtorch.LambdaBlowtorchProps.property.desiredConcurrency">desiredConcurrency</a></code> | <code>number</code> | The desired level of concurrency. |
 | <code><a href="#@wheatstalk/cdk-lambda-blowtorch.LambdaBlowtorchProps.property.target">target</a></code> | <code>aws-cdk-lib.aws_lambda.IFunction</code> | The lambda function to warm. |
 | <code><a href="#@wheatstalk/cdk-lambda-blowtorch.LambdaBlowtorchProps.property.log">log</a></code> | <code>boolean</code> | Show blowtorch log messages. |
+| <code><a href="#@wheatstalk/cdk-lambda-blowtorch.LambdaBlowtorchProps.property.warmingInterval">warmingInterval</a></code> | <code>aws-cdk-lib.Duration</code> | The interval between warming events at the desired level of concurrency. |
 | <code><a href="#@wheatstalk/cdk-lambda-blowtorch.LambdaBlowtorchProps.property.warmingPayload">warmingPayload</a></code> | <code>string</code> | Payload to send to the function when warming. |
 
 ---
@@ -160,6 +161,19 @@ public readonly log: boolean;
 - *Default:* false
 
 Show blowtorch log messages.
+
+---
+
+##### `warmingInterval`<sup>Optional</sup> <a name="warmingInterval" id="@wheatstalk/cdk-lambda-blowtorch.LambdaBlowtorchProps.property.warmingInterval"></a>
+
+```typescript
+public readonly warmingInterval: Duration;
+```
+
+- *Type:* aws-cdk-lib.Duration
+- *Default:* Duration.minutes(1)
+
+The interval between warming events at the desired level of concurrency.
 
 ---
 

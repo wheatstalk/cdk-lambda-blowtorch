@@ -1,5 +1,6 @@
 {
   "name": "@wheatstalk/cdk-lambda-blowtorch",
+  "description": "Warm your slow-starting AWS Lambdas with a blowtorch!",
   "repository": {
     "type": "git",
     "url": "https://github.com/wheatstalk/cdk-lambda-blowtorch.git"
