@@ -41,6 +41,33 @@
       ],
       "condition": "! git log --oneline -1 | grep -q \"chore(release):\""
     },
+    "bundle": {
+      "name": "bundle",
+      "description": "Prepare assets",
+      "steps": [
+        {
+          "spawn": "bundle:functions/blowtorch.lambda"
+        }
+      ]
+    },
+    "bundle:functions/blowtorch.lambda": {
+      "name": "bundle:functions/blowtorch.lambda",
+      "description": "Create a JavaScript bundle from src/functions/blowtorch.lambda.ts",
+      "steps": [
+        {
+          "exec": "esbuild --bundle src/functions/blowtorch.lambda.ts --target=\"node14\" --platform=\"node\" --outfile=\"assets/functions/blowtorch.lambda/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:aws-sdk"
+        }
+      ]
+    },
+    "bundle:functions/blowtorch.lambda:watch": {
+      "name": "bundle:functions/blowtorch.lambda:watch",
+      "description": "Continuously update the JavaScript bundle from src/functions/blowtorch.lambda.ts",
+      "steps": [
+        {
+          "exec": "esbuild --bundle src/functions/blowtorch.lambda.ts --target=\"node14\" --platform=\"node\" --outfile=\"assets/functions/blowtorch.lambda/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:aws-sdk --watch"
+        }
+      ]
+    },
     "clobber": {
       "name": "clobber",
       "description": "hard resets to HEAD of origin and cleans the local repo",
@@ -130,6 +157,78 @@
         }
       ]
     },
+    "integ:dev:assert": {
+      "name": "integ:dev:assert",
+      "description": "assert the snapshot of integration test 'dev'",
+      "steps": [
+        {
+          "exec": "[ -d \"test/dev.integ.snapshot\" ] || (echo \"No snapshot available for integration test 'dev'. Run 'projen integ:dev:deploy' to capture.\" && exit 1)"
+        },
+        {
+          "exec": "cdk synth --app \"ts-node -P tsconfig.dev.json test/dev.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata -o test/.tmp/dev.integ/assert.cdk.out > /dev/null"
+        },
+        {
+          "exec": "diff -r -x asset.* -x cdk.out -x manifest.json -x tree.json test/dev.integ.snapshot/ test/.tmp/dev.integ/assert.cdk.out/"
+        }
+      ]
+    },
+    "integ:dev:deploy": {
+      "name": "integ:dev:deploy",
+      "description": "deploy integration test 'dev' and capture snapshot",
+      "steps": [
+        {
+          "exec": "rm -fr test/.tmp/dev.integ/deploy.cdk.out"
+        },
+        {
+          "exec": "cdk deploy --app \"ts-node -P tsconfig.dev.json test/dev.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata '**' --require-approval=never -o test/.tmp/dev.integ/deploy.cdk.out"
+        },
+        {
+          "exec": "rm -fr test/dev.integ.snapshot"
+        },
+        {
+          "exec": "mv test/.tmp/dev.integ/deploy.cdk.out test/dev.integ.snapshot"
+        },
+        {
+          "spawn": "integ:dev:destroy"
+        }
+      ]
+    },
+    "integ:dev:destroy": {
+      "name": "integ:dev:destroy",
+      "description": "destroy integration test 'dev'",
+      "steps": [
+        {
+          "exec": "cdk destroy --app test/dev.integ.snapshot '**' --no-version-reporting"
+        }
+      ]
+    },
+    "integ:dev:snapshot": {
+      "name": "integ:dev:snapshot",
+      "description": "update snapshot for integration test \"dev\"",
+      "steps": [
+        {
+          "exec": "cdk synth --app \"ts-node -P tsconfig.dev.json test/dev.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata -o test/dev.integ.snapshot > /dev/null"
+        }
+      ]
+    },
+    "integ:dev:watch": {
+      "name": "integ:dev:watch",
+      "description": "watch integration test 'dev' (without updating snapshots)",
+      "steps": [
+        {
+          "exec": "cdk watch --app \"ts-node -P tsconfig.dev.json test/dev.integ.ts\" --no-notices --no-version-reporting --no-asset-metadata --no-path-metadata '**' -o test/.tmp/dev.integ/deploy.cdk.out"
+        }
+      ]
+    },
+    "integ:snapshot-all": {
+      "name": "integ:snapshot-all",
+      "description": "update snapshot for all integration tests",
+      "steps": [
+        {
+          "spawn": "integ:dev:snapshot"
+        }
+      ]
+    },
     "package": {
       "name": "package",
       "description": "Creates the distribution package",
@@ -172,7 +271,12 @@
     },
     "pre-compile": {
       "name": "pre-compile",
-      "description": "Prepare the project for compilation"
+      "description": "Prepare the project for compilation",
+      "steps": [
+        {
+          "spawn": "bundle"
+        }
+      ]
     },
     "release": {
       "name": "release",
@@ -207,6 +311,9 @@
         },
         {
           "spawn": "eslint"
+        },
+        {
+          "spawn": "integ:dev:assert"
         }
       ]
     },

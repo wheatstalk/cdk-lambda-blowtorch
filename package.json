@@ -1,12 +1,15 @@
 {
-  "name": "cdk-lambda-blowtorch",
+  "name": "@wheatstalk/cdk-lambda-blowtorch",
   "repository": {
     "type": "git",
-    "url": "https://github.com/joshkellendonk/cdk-lambda-blowtorch.git"
+    "url": "https://github.com/wheatstalk/cdk-lambda-blowtorch.git"
   },
   "scripts": {
     "build": "npx projen build",
     "bump": "npx projen bump",
+    "bundle": "npx projen bundle",
+    "bundle:functions/blowtorch.lambda": "npx projen bundle:functions/blowtorch.lambda",
+    "bundle:functions/blowtorch.lambda:watch": "npx projen bundle:functions/blowtorch.lambda:watch",
     "clobber": "npx projen clobber",
     "compat": "npx projen compat",
     "compile": "npx projen compile",
@@ -14,6 +17,12 @@
     "docgen": "npx projen docgen",
     "eject": "npx projen eject",
     "eslint": "npx projen eslint",
+    "integ:dev:assert": "npx projen integ:dev:assert",
+    "integ:dev:deploy": "npx projen integ:dev:deploy",
+    "integ:dev:destroy": "npx projen integ:dev:destroy",
+    "integ:dev:snapshot": "npx projen integ:dev:snapshot",
+    "integ:dev:watch": "npx projen integ:dev:watch",
+    "integ:snapshot-all": "npx projen integ:snapshot-all",
     "package": "npx projen package",
     "package-all": "npx projen package-all",
     "package:js": "npx projen package:js",
@@ -38,8 +47,11 @@
     "@types/node": "^14",
     "@typescript-eslint/eslint-plugin": "^5",
     "@typescript-eslint/parser": "^5",
+    "aws-cdk": "^2",
     "aws-cdk-lib": "2.1.0",
+    "aws-sdk": "^2.1241.0",
     "constructs": "10.0.5",
+    "esbuild": "^0.15.12",
     "eslint": "^8",
     "eslint-import-resolver-node": "^0.3.6",
     "eslint-import-resolver-typescript": "^3.5.2",
@@ -55,6 +67,7 @@
     "projen": "^0.65.2",
     "standard-version": "^9",
     "ts-jest": "^27",
+    "ts-node": "^10.9.1",
     "typescript": "^4.8.4"
   },
   "peerDependencies": {
@@ -66,6 +79,9 @@
   ],
   "main": "lib/index.js",
   "license": "Apache-2.0",
+  "publishConfig": {
+    "access": "public"
+  },
   "version": "0.0.0",
   "jest": {
     "testMatch": [

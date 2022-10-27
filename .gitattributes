@@ -16,7 +16,9 @@
 /.projen/files.json linguist-generated
 /.projen/tasks.json linguist-generated
 /API.md linguist-generated
+/cdk.json linguist-generated
 /LICENSE linguist-generated
 /package.json linguist-generated
+/src/functions/blowtorch-function.ts linguist-generated
 /tsconfig.dev.json linguist-generated
 /yarn.lock linguist-generated

@@ -50,3 +50,17 @@ junit.xml
 .jsii
 tsconfig.json
 !/API.md
+/assets/
+!/src/functions/blowtorch-function.ts
+test/.tmp
+test/dev.integ.snapshot/asset.*
+test/dev.integ.snapshot/**/asset.*
+test/dev.integ.snapshot/cdk.out
+test/dev.integ.snapshot/**/cdk.out
+test/dev.integ.snapshot/manifest.json
+test/dev.integ.snapshot/**/manifest.json
+test/dev.integ.snapshot/tree.json
+test/dev.integ.snapshot/**/tree.json
+!/cdk.json
+/cdk.out/
+.cdk.staging/
