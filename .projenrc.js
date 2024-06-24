@@ -29,6 +29,8 @@ const project = new pj.awscdk.AwsCdkConstructLibrary({
   // packageName: undefined,  /* The "name" in package.json. */
 });
 
+project.eslint.addIgnorePattern('*.handler.ts');
+
 project.bundler.addBundle('src/LambdaBlowtorch.handler.ts', {
   platform: 'node',
   target: 'node20',

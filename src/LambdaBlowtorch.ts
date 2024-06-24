@@ -1,3 +1,4 @@
+import * as path from 'path';
 import { aws_events, aws_events_targets, aws_lambda, Duration } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { BlowtorchFunctionConfig } from './api';
@@ -76,7 +77,7 @@ class BlowtorchFunction extends aws_lambda.Function {
     super(scope, id, {
       runtime: aws_lambda.Runtime.NODEJS_LATEST,
       handler: 'index.handler',
-      code: aws_lambda.Code.fromAsset('assets/LambdaBlowtorch.handler'),
+      code: aws_lambda.Code.fromAsset(path.join(__dirname, '..', 'assets/LambdaBlowtorch.handler')),
       environment: {
         CONFIG: JSON.stringify(props.config),
       },
