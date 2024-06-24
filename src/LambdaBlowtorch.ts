@@ -1,7 +1,6 @@
 import { aws_events, aws_events_targets, aws_lambda, Duration } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { BlowtorchFunctionConfig } from './api';
-import { BlowtorchFunction } from './functions/blowtorch-function';
 
 export interface LambdaBlowtorchProps {
   /**
@@ -52,10 +51,8 @@ export class LambdaBlowtorch extends Construct {
     };
 
     const handler = new BlowtorchFunction(this, 'Blowtorch', {
-      environment: {
-        CONFIG: JSON.stringify(config),
-      },
-      timeout: props.warmingInterval ?? Duration.minutes(1),
+      config,
+      timeout: props.warmingInterval,
     });
 
     props.target.grantInvoke(handler);
@@ -65,6 +62,25 @@ export class LambdaBlowtorch extends Construct {
       targets: [
         new aws_events_targets.LambdaFunction(handler),
       ],
+    });
+  }
+}
+
+interface BlowtorchFunctionProps {
+  readonly config: BlowtorchFunctionConfig;
+  readonly timeout?: Duration;
+}
+
+class BlowtorchFunction extends aws_lambda.Function {
+  constructor(scope: Construct, id: string, props: BlowtorchFunctionProps) {
+    super(scope, id, {
+      runtime: aws_lambda.Runtime.NODEJS_LATEST,
+      handler: 'index.handler',
+      code: aws_lambda.Code.fromAsset('assets/LambdaBlowtorch.handler'),
+      environment: {
+        CONFIG: JSON.stringify(props.config),
+      },
+      timeout: props.timeout ?? Duration.minutes(1),
     });
   }
 }

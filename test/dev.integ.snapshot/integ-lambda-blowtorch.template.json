@@ -1,228 +1,242 @@
 {
-  "Resources": {
-    "TargetServiceRoleC43BB37D": {
-      "Type": "AWS::IAM::Role",
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "lambda.amazonaws.com"
-              }
-            }
-          ],
-          "Version": "2012-10-17"
-        },
-        "ManagedPolicyArns": [
-          {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition"
-                },
-                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-              ]
-            ]
-          }
-        ]
+ "Resources": {
+  "TargetServiceRoleC43BB37D": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
       }
+     ],
+     "Version": "2012-10-17"
     },
-    "Target3191CF44": {
-      "Type": "AWS::Lambda::Function",
-      "Properties": {
-        "Code": {
-          "ZipFile": "import time\ndef handler(event, ctx):\n  print(\"I am a slow function\")\n  time.sleep(5)\n  return {}"
-        },
-        "Role": {
-          "Fn::GetAtt": [
-            "TargetServiceRoleC43BB37D",
-            "Arn"
-          ]
-        },
-        "Handler": "index.handler",
-        "Runtime": "python3.9",
-        "Timeout": 60
-      },
-      "DependsOn": [
-        "TargetServiceRoleC43BB37D"
-      ]
-    },
-    "BlowtorchServiceRole8FA18EAE": {
-      "Type": "AWS::IAM::Role",
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "lambda.amazonaws.com"
-              }
-            }
-          ],
-          "Version": "2012-10-17"
-        },
-        "ManagedPolicyArns": [
-          {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition"
-                },
-                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-              ]
-            ]
-          }
-        ]
-      }
-    },
-    "BlowtorchServiceRoleDefaultPolicyBEA01E72": {
-      "Type": "AWS::IAM::Policy",
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": "lambda:InvokeFunction",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "Target3191CF44",
-                  "Arn"
-                ]
-              }
-            }
-          ],
-          "Version": "2012-10-17"
-        },
-        "PolicyName": "BlowtorchServiceRoleDefaultPolicyBEA01E72",
-        "Roles": [
-          {
-            "Ref": "BlowtorchServiceRole8FA18EAE"
-          }
-        ]
-      }
-    },
-    "BlowtorchC7D0C27E": {
-      "Type": "AWS::Lambda::Function",
-      "Properties": {
-        "Code": {
-          "S3Bucket": {
-            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-          },
-          "S3Key": "a8cf55fde87700e5032b128e9c6d476463721f46d181f9eaa2f6899b900eb686.zip"
-        },
-        "Role": {
-          "Fn::GetAtt": [
-            "BlowtorchServiceRole8FA18EAE",
-            "Arn"
-          ]
-        },
-        "Description": "src/functions/blowtorch.lambda.ts",
-        "Environment": {
-          "Variables": {
-            "CONFIG": {
-              "Fn::Join": [
-                "",
-                [
-                  "{\"target\":\"",
-                  {
-                    "Fn::GetAtt": [
-                      "Target3191CF44",
-                      "Arn"
-                    ]
-                  },
-                  "\",\"desiredConcurrency\":50,\"warmingPayload\":\"{}\"}"
-                ]
-              ]
-            },
-            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
-          }
-        },
-        "Handler": "index.handler",
-        "Runtime": "nodejs14.x",
-        "Timeout": 60
-      },
-      "DependsOn": [
-        "BlowtorchServiceRoleDefaultPolicyBEA01E72",
-        "BlowtorchServiceRole8FA18EAE"
-      ]
-    },
-    "BlowtorchRuleF680CDB8": {
-      "Type": "AWS::Events::Rule",
-      "Properties": {
-        "ScheduleExpression": "rate(1 minute)",
-        "State": "ENABLED",
-        "Targets": [
-          {
-            "Arn": {
-              "Fn::GetAtt": [
-                "BlowtorchC7D0C27E",
-                "Arn"
-              ]
-            },
-            "Id": "Target0"
-          }
-        ]
-      }
-    },
-    "BlowtorchRuleAllowEventRuleinteglambdablowtorchBlowtorchA8FA07992D3F373D": {
-      "Type": "AWS::Lambda::Permission",
-      "Properties": {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": {
-          "Fn::GetAtt": [
-            "BlowtorchC7D0C27E",
-            "Arn"
-          ]
-        },
-        "Principal": "events.amazonaws.com",
-        "SourceArn": {
-          "Fn::GetAtt": [
-            "BlowtorchRuleF680CDB8",
-            "Arn"
-          ]
-        }
-      }
-    }
-  },
-  "Parameters": {
-    "BootstrapVersion": {
-      "Type": "AWS::SSM::Parameter::Value<String>",
-      "Default": "/cdk-bootstrap/hnb659fds/version",
-      "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
-    }
-  },
-  "Rules": {
-    "CheckBootstrapVersion": {
-      "Assertions": [
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
         {
-          "Assert": {
-            "Fn::Not": [
-              {
-                "Fn::Contains": [
-                  [
-                    "1",
-                    "2",
-                    "3",
-                    "4",
-                    "5"
-                  ],
-                  {
-                    "Ref": "BootstrapVersion"
-                  }
-                ]
-              }
-            ]
-          },
-          "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
-        }
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
       ]
+     }
+    ]
+   }
+  },
+  "Target3191CF44": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "import time\ndef handler(event, ctx):\n  print(\"I am a slow function\")\n  time.sleep(5)\n  return {}"
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "TargetServiceRoleC43BB37D",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.9",
+    "Timeout": 60
+   },
+   "DependsOn": [
+    "TargetServiceRoleC43BB37D"
+   ]
+  },
+  "BlowtorchServiceRole8FA18EAE": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "BlowtorchServiceRoleDefaultPolicyBEA01E72": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "Target3191CF44",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "Target3191CF44",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "BlowtorchServiceRoleDefaultPolicyBEA01E72",
+    "Roles": [
+     {
+      "Ref": "BlowtorchServiceRole8FA18EAE"
+     }
+    ]
+   }
+  },
+  "BlowtorchC7D0C27E": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "8a7d887a2939da56395528a96b79f489dd5f246637137dfdbb5734b71e4c1174.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "CONFIG": {
+       "Fn::Join": [
+        "",
+        [
+         "{\"target\":\"",
+         {
+          "Fn::GetAtt": [
+           "Target3191CF44",
+           "Arn"
+          ]
+         },
+         "\",\"desiredConcurrency\":50,\"warmingPayload\":\"{}\"}"
+        ]
+       ]
+      }
+     }
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "BlowtorchServiceRole8FA18EAE",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x",
+    "Timeout": 60
+   },
+   "DependsOn": [
+    "BlowtorchServiceRoleDefaultPolicyBEA01E72",
+    "BlowtorchServiceRole8FA18EAE"
+   ]
+  },
+  "BlowtorchRuleF680CDB8": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "ScheduleExpression": "rate(1 minute)",
+    "State": "ENABLED",
+    "Targets": [
+     {
+      "Arn": {
+       "Fn::GetAtt": [
+        "BlowtorchC7D0C27E",
+        "Arn"
+       ]
+      },
+      "Id": "Target0"
+     }
+    ]
+   }
+  },
+  "BlowtorchRuleAllowEventRuleinteglambdablowtorchBlowtorchA8FA07992D3F373D": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "BlowtorchC7D0C27E",
+      "Arn"
+     ]
+    },
+    "Principal": "events.amazonaws.com",
+    "SourceArn": {
+     "Fn::GetAtt": [
+      "BlowtorchRuleF680CDB8",
+      "Arn"
+     ]
     }
+   }
   }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
 }

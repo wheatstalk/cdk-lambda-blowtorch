@@ -2,7 +2,7 @@ const pj = require('projen');
 const project = new pj.awscdk.AwsCdkConstructLibrary({
   author: 'Josh Kellendonk',
   authorAddress: 'joshkellendonk@gmail.com',
-  cdkVersion: '2.1.0',
+  cdkVersion: '2.133.0',
   defaultReleaseBranch: 'main',
   name: '@wheatstalk/cdk-lambda-blowtorch',
   repositoryUrl: 'https://github.com/wheatstalk/cdk-lambda-blowtorch.git',
@@ -17,6 +17,8 @@ const project = new pj.awscdk.AwsCdkConstructLibrary({
     },
   },
 
+  lambdaAutoDiscover: false,
+
   devDeps: [
     'aws-sdk',
   ],
@@ -25,6 +27,11 @@ const project = new pj.awscdk.AwsCdkConstructLibrary({
   // description: undefined,  /* The description is just a string that helps people understand the purpose of the package. */
   // devDeps: [],             /* Build dependencies for this module. */
   // packageName: undefined,  /* The "name" in package.json. */
+});
+
+project.bundler.addBundle('src/LambdaBlowtorch.handler.ts', {
+  platform: 'node',
+  target: 'node20',
 });
 
 const cdkConfig = new pj.awscdk.CdkConfig(project, {

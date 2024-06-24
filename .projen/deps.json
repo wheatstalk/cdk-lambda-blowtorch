@@ -7,22 +7,17 @@
     },
     {
       "name": "@types/node",
-      "version": "^14",
+      "version": "^16 <= 16.18.78",
       "type": "build"
     },
     {
       "name": "@typescript-eslint/eslint-plugin",
-      "version": "^5",
+      "version": "^7",
       "type": "build"
     },
     {
       "name": "@typescript-eslint/parser",
-      "version": "^5",
-      "type": "build"
-    },
-    {
-      "name": "aws-cdk-lib",
-      "version": "2.1.0",
+      "version": "^7",
       "type": "build"
     },
     {
@@ -35,16 +30,7 @@
       "type": "build"
     },
     {
-      "name": "constructs",
-      "version": "10.0.5",
-      "type": "build"
-    },
-    {
       "name": "esbuild",
-      "type": "build"
-    },
-    {
-      "name": "eslint-import-resolver-node",
       "type": "build"
     },
     {
@@ -62,16 +48,12 @@
     },
     {
       "name": "jest-junit",
-      "version": "^13",
+      "version": "^15",
       "type": "build"
     },
     {
       "name": "jest",
       "version": "^27",
-      "type": "build"
-    },
-    {
-      "name": "jsii",
       "type": "build"
     },
     {
@@ -87,12 +69,13 @@
       "type": "build"
     },
     {
-      "name": "json-schema",
+      "name": "jsii-rosetta",
+      "version": "1.x",
       "type": "build"
     },
     {
-      "name": "npm-check-updates",
-      "version": "^16",
+      "name": "jsii",
+      "version": "1.x",
       "type": "build"
     },
     {
@@ -118,23 +101,18 @@
       "type": "build"
     },
     {
+      "name": "@types/babel__traverse",
+      "version": "7.18.2",
+      "type": "override"
+    },
+    {
       "name": "@types/prettier",
       "version": "2.6.0",
       "type": "override"
     },
     {
-      "name": "@types/responselike",
-      "version": "1.0.0",
-      "type": "override"
-    },
-    {
-      "name": "got",
-      "version": "12.3.1",
-      "type": "override"
-    },
-    {
       "name": "aws-cdk-lib",
-      "version": "^2.1.0",
+      "version": "^2.133.0",
       "type": "peer"
     },
     {

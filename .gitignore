@@ -30,7 +30,6 @@ jspm_packages/
 *.tgz
 .yarn-integrity
 .cache
-!/.projenrc.js
 /test-reports/
 junit.xml
 /coverage/
@@ -50,8 +49,6 @@ junit.xml
 .jsii
 tsconfig.json
 !/API.md
-/assets/
-!/src/functions/blowtorch-function.ts
 test/.tmp
 test/dev.integ.snapshot/asset.*
 test/dev.integ.snapshot/**/asset.*
@@ -61,6 +58,8 @@ test/dev.integ.snapshot/manifest.json
 test/dev.integ.snapshot/**/manifest.json
 test/dev.integ.snapshot/tree.json
 test/dev.integ.snapshot/**/tree.json
+/assets/
 !/cdk.json
 /cdk.out/
 .cdk.staging/
+!/.projenrc.js

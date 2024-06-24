@@ -1,5 +1,5 @@
 import * as AWS from 'aws-sdk';
-import { BlowtorchFunctionConfig } from '../api';
+import { BlowtorchFunctionConfig } from './api';
 
 const globalLambda = new AWS.Lambda();
 const globalConfig: BlowtorchFunctionConfig = JSON.parse(process.env.CONFIG!);
